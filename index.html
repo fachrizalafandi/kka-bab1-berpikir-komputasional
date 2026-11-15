@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Modul Pembelajaran Web Interaktif Koding dan Kecerdasan Artifisial (KKA) Kelas VII SMP/MTs - Bab 1: Berpikir Komputasional">
+  <title>KKA Kelas VII — Bab 1: Berpikir Komputasional</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Langsung ke isi utama</a>
+
+  <!-- Header & Navigasi Utama -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">KKA VII</span>
+        <div>
+          <h1 class="brand-title">Berpikir Komputasional</h1>
+          <p class="brand-subtitle">Bab 1 • Koding &amp; Kecerdasan Artifisial SMP/MTs</p>
+        </div>
+      </div>
+
+      <div class="progress-summary" aria-label="Progres belajar">
+        <div class="progress-text">
+          <span>Progres Modul</span>
+          <strong id="global-progress-pct">0%</strong>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="global-progress-bar">
+          <div class="progress-fill" id="global-progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="Navigasi bagian modul">
+      <div class="container nav-scroll">
+        <button type="button" class="nav-btn active" data-view="beranda" aria-current="page">1. Beranda</button>
+        <button type="button" class="nav-btn" data-view="materi">2. Materi &amp; Latihan</button>
+        <button type="button" class="nav-btn" data-view="evaluasi">3. Evaluasi Akhir</button>
+        <button type="button" class="nav-btn" data-view="refleksi">4. Refleksi</button>
+        <button type="button" class="nav-btn nav-btn-teacher" data-view="guru">Area Guru</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Notifikasi Status Global -->
+  <div class="container">
+    <div id="status-banner" class="status-banner hidden" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- Konten Utama -->
+  <main id="main-content" class="container main-container">
+
+    <!-- ==================== VIEW 1: BERANDA ==================== -->
+    <section id="view-beranda" class="view-section active" aria-labelledby="heading-beranda">
+      <div class="hero-card">
+        <span class="pill pill-primary">Modul Mandiri &amp; Panduan Kelas</span>
+        <h2 id="heading-beranda">Bagaimana cara menggunakan data dan instruksi yang jelas untuk menyelesaikan masalah nyata?</h2>
+        <p class="lead">
+          Selamat datang di Bab 1 Koding dan Kecerdasan Artifisial (KKA) Kelas VII[cite: 1]. Di sini kamu akan belajar cara memecahkan persoalan sehari-hari secara runtut, membaca data di sekitarmu, hingga merancang simulasi pemilahan sampah berbasis blok[cite: 3, 4].
+        </p>
+
+        <div class="student-name-box">
+          <label for="student-nickname">Nama Panggilan Siswa <em>(opsional, hanya tersimpan di perangkat ini)</em>:</label>
+          <div class="inline-form">
+            <input type="text" id="student-nickname" maxlength="40" placeholder="Contoh: Raka / Siti" autocomplete="off">
+            <button type="button" id="btn-save-nickname" class="btn btn-secondary">Simpan Nama</button>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary btn-lg" data-goto="materi">Mulai Belajar Sekarang &rarr;</button>
+          <button type="button" class="btn btn-outline" data-goto="guru">Saya Guru (Panduan &amp; Kode)</button>
+        </div>
+      </div>
+
+      <div class="grid-two">
+        <article class="card">
+          <h3>Tujuan Pembelajaran</h3>
+          <ul class="check-list">
+            <li>Memahami berpikir komputasional dan menerapkan empat pilarnya (dekomposisi, pengenalan pola, abstraksi, algoritma) dalam kehidupan sehari-hari[cite: 5].</li>
+            <li>Mengelola data sederhana (mengumpulkan, menyimpan, mengolah, menganalisis, dan menyajikannya dalam tabel maupun diagram batang)[cite: 7, 20].</li>
+            <li>Menerapkan langkah pemecahan masalah Polya pada kasus posisi/urutan parkir dan rute optimal[cite: 22, 23, 26].</li>
+            <li>Mengembangkan instruksi, menemukan serta memperbaiki kesalahan (<em>debugging</em>), dan mengenal pemrograman visual berbasis blok (Scratch)[cite: 4, 30, 33].</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Alur Belajar Modul (5 Tahap)</h3>
+          <ol class="step-list">
+            <li><strong>Tahap 1 — Beranda:</strong> Kenali tujuan dan siapkan diri sebelum mulai belajar.</li>
+            <li><strong>Tahap 2 — 5 Unit Materi &amp; Permainan:</strong> Pelajari ringkasan konsep bertahap dan selesaikan 5 aktivitas interaktif langsung di layar.</li>
+            <li><strong>Tahap 3 — Evaluasi Akhir:</strong> Kerjakan 11 soal terpadu (pilihan ganda, pilihan ganda kompleks, menjodohkan, mengurutkan, dan uraian).</li>
+            <li><strong>Tahap 4 — Refleksi Diri:</strong> Tandai kemampuan yang sudah kamu kuasai dan yang masih perlu dilatih[cite: 46].</li>
+            <li><strong>Tahap 5 — Kirim Hasil (Opsional):</strong> Gunakan Kode Guru untuk mengirim ringkasan nilai melalui WhatsApp atau Email.</li>
+          </ol>
+        </article>
+      </div>
+
+      <!-- Formatif Awal Interaktif -->
+      <article class="card">
+        <h3>Pemanasan: Cek Pemahaman Awalmu</h3>
+        <p class="muted">Pilih jawaban yang paling dekat dengan pengalamanmu sebelum masuk ke materi inti:</p>
+        <div id="warmup-container" class="warmup-grid"></div>
+        <div id="warmup-feedback" class="feedback-box hidden" role="status"></div>
+      </article>
+    </section>
+
+    <!-- ==================== VIEW 2: MATERI & AKTIVITAS ==================== -->
+    <section id="view-materi" class="view-section hidden" aria-labelledby="heading-materi">
+      <div class="section-header">
+        <div>
+          <h2 id="heading-materi">Materi &amp; Aktivitas Interaktif</h2>
+          <p class="muted">Buka setiap unit secara berurutan, baca konsep kuncinya, lalu selesaikan tantangannya.</p>
+        </div>
+        <div class="unit-counter" id="unit-completion-badge">0 / 5 Unit Selesai</div>
+      </div>
+
+      <!-- Tab Pilihan Unit Materi -->
+      <div class="unit-tabs" role="tablist" aria-label="Daftar unit materi Bab 1">
+        <button type="button" role="tab" class="unit-tab active" aria-selected="true" data-unit="0" id="tab-unit-0">
+          <span class="tab-num">Unit 1</span>
+          <span class="tab-label">4 Pilar Berpikir Komputasional</span>
+          <span class="tab-status" id="status-unit-0" aria-label="Belum selesai">○</span>
+        </button>
+        <button type="button" role="tab" class="unit-tab" aria-selected="false" data-unit="1" id="tab-unit-1">
+          <span class="tab-num">Unit 2</span>
+          <span class="tab-label">Pengelolaan &amp; Penyajian Data</span>
+          <span class="tab-status" id="status-unit-1" aria-label="Belum selesai">○</span>
+        </button>
+        <button type="button" role="tab" class="unit-tab" aria-selected="false" data-unit="2" id="tab-unit-2">
+          <span class="tab-num">Unit 3</span>
+          <span class="tab-label">Polya, Parkir &amp; Rute</span>
+          <span class="tab-status" id="status-unit-2" aria-label="Belum selesai">○</span>
+        </button>
+        <button type="button" role="tab" class="unit-tab" aria-selected="false" data-unit="3" id="tab-unit-3">
+          <span class="tab-num">Unit 4</span>
+          <span class="tab-label">Instruksi &amp; Debugging</span>
+          <span class="tab-status" id="status-unit-3" aria-label="Belum selesai">○</span>
+        </button>
+        <button type="button" role="tab" class="unit-tab" aria-selected="false" data-unit="4" id="tab-unit-4">
+          <span class="tab-num">Unit 5</span>
+          <span class="tab-label">Scratch &amp; Pilah Sampah</span>
+          <span class="tab-status" id="status-unit-4" aria-label="Belum selesai">○</span>
+        </button>
+      </div>
+
+      <!-- Konten Unit Dinamis -->
+      <div id="unit-content-area" class="unit-panel" role="tabpanel"></div>
+
+      <!-- Navigasi Antar Unit -->
+      <div class="unit-footer-nav">
+        <button type="button" id="btn-prev-unit" class="btn btn-secondary">&larr; Unit Sebelumnya</button>
+        <button type="button" id="btn-next-unit" class="btn btn-primary">Unit Berikutnya &rarr;</button>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: EVALUASI AKHIR ==================== -->
+    <section id="view-evaluasi" class="view-section hidden" aria-labelledby="heading-evaluasi">
+      <div class="section-header">
+        <div>
+          <h2 id="heading-evaluasi">Evaluasi Akhir Bab 1</h2>
+          <p class="muted">Uji pemahamanmu pada situasi sekolah dan sehari-hari. Tersedia 11 soal beragam bentuk.</p>
+        </div>
+        <div class="eval-controls-top">
+          <button type="button" id="btn-view-eval-summary" class="btn btn-outline hidden">Lihat Ringkasan Hasil</button>
+          <button type="button" id="btn-reset-eval" class="btn btn-danger-outline">Ulangi Evaluasi</button>
+        </div>
+      </div>
+
+      <!-- Progress Soal Evaluasi -->
+      <div class="card eval-nav-card">
+        <div class="eval-nav-top">
+          <span id="eval-question-indicator">Soal 1 dari 11</span>
+          <span class="pill" id="eval-question-type">Pilihan Ganda</span>
+        </div>
+        <div id="eval-dots" class="eval-dots" aria-label="Navigasi nomor soal"></div>
+      </div>
+
+      <!-- Area Soal Aktif -->
+      <div id="eval-question-card" class="card"></div>
+
+      <!-- Area Ringkasan Hasil Evaluasi -->
+      <div id="eval-summary-card" class="card hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- ==================== VIEW 4: REFLEKSI & DATA LOKAL ==================== -->
+    <section id="view-refleksi" class="view-section hidden" aria-labelledby="heading-refleksi">
+      <div class="section-header">
+        <div>
+          <h2 id="heading-refleksi">Refleksi Diri &amp; Pengaturan Data Lokal</h2>
+          <p class="muted">Evaluasi kemampuanmu setelah mempelajari Bab 1 Berpikir Komputasional[cite: 46].</p>
+        </div>
+      </div>
+
+      <article class="card">
+        <h3>Checklist Refleksi Kemampuan[cite: 46]</h3>
+        <p class="muted">Beri tanda pada setiap pernyataan sesuai pengalaman belajarmu hari ini[cite: 46]:</p>
+        <div class="table-responsive">
+          <table class="data-table reflection-table">
+            <thead>
+              <tr>
+                <th>Pengalaman Belajar Saya</th>
+                <th class="text-center">Sudah Bisa</th>
+                <th class="text-center">Masih Perlu Belajar</th>
+              </tr>
+            </thead>
+            <tbody id="reflection-tbody"></tbody>
+          </table>
+        </div>
+        <div class="reflection-note-box">
+          <label for="reflection-note">Catatan pribadi (hal paling menarik atau bagian yang ingin ditanyakan ke guru):</label>
+          <textarea id="reflection-note" rows="3" placeholder="Tulis catatan singkatmu di sini..."></textarea>
+          <button type="button" id="btn-save-reflection" class="btn btn-primary">Simpan Refleksi</button>
+        </div>
+      </article>
+
+      <article class="card border-warning">
+        <h3>Penyimpanan Lokal &amp; Privasi Perangkat</h3>
+        <p>
+          Seluruh progres belajar, skor aktivitas, jawaban evaluasi, dan refleksi disimpan <strong>hanya di browser pada perangkat ini</strong> (<code>localStorage</code>). Data tidak dikirim otomatis ke server mana pun.
+        </p>
+        <p class="muted">
+          Jika kamu memakai perangkat bersama di laboratorium sekolah, hapus data lokal setelah selesai belajar atau mengirim hasil ke guru.
+        </p>
+        <button type="button" id="btn-clear-all-student-data" class="btn btn-danger">Hapus Semua Data Siswa di Perangkat Ini</button>
+      </article>
+    </section>
+
+    <!-- ==================== VIEW 5: AREA GURU ==================== -->
+    <section id="view-guru" class="view-section hidden" aria-labelledby="heading-guru">
+      <div class="section-header">
+        <div>
+          <h2 id="heading-guru">Area Guru &amp; Panduan Pembelajaran Kelas</h2>
+          <p class="muted">Panduan fasilitasi pembelajaran Bab 1 serta generator Kode Guru untuk pengumpulan hasil siswa.</p>
+        </div>
+      </div>
+
+      <!-- Panduan Mengajar -->
+      <div class="grid-two">
+        <article class="card">
+          <h3>Panduan Penggunaan Modul di Kelas</h3>
+          <ul class="check-list">
+            <li><strong>Mode Proyektor / IFP Kelas:</strong> Gunakan tab <em>Materi &amp; Latihan</em> untuk membahas konsep empat pilar, tabel data kehadiran, teka-teki parkir, dan blok Scratch bersama-sama.</li>
+            <li><strong>Mode Mandiri / Kelompok Kecil:</strong> Siswa mengakses tautan GitHub Pages melalui ponsel atau Chromebook tanpa perlu instalasi maupun akun login.</li>
+            <li><strong>Pengumpulan Hasil Tanpa Server:</strong> Guru membuat <em>Kode Guru</em> di bawah, lalu membagikannya di papan tulis atau grup kelas agar siswa dapat mengirim ringkasan evaluasi via WhatsApp/Email.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Saran Alur &amp; Aktivitas Kelas (2–3 Pertemuan)</h3>
+          <ol class="step-list">
+            <li><strong>Pertemuan 1 (Data &amp; 4 Pilar):</strong> Lakukan survei cepat transportasi &amp; hobi teman sekelas secara langsung (Aktivitas 1 &amp; 2)[cite: 11, 16], lalu olah datanya di Unit 2.</li>
+            <li><strong>Pertemuan 2 (Polya, Parkir &amp; Rute):</strong> Diskusikan strategi keluar parkir dan rute kurir roti secara berkelompok (Aktivitas 4 &amp; 5)[cite: 25, 28], lalu uji di Unit 3.</li>
+            <li><strong>Pertemuan 3 (Instruksi, Debugging &amp; Scratch):</strong> Mainkan simulasi <em>Pilah Sampah</em> di Unit 5, bahas logika blok perintahnya, dan kerjakan Evaluasi Akhir[cite: 38, 42].</li>
+          </ol>
+        </article>
+      </div>
+
+      <!-- Klaim Peran & Profil Guru -->
+      <article class="card" id="teacher-claim-card">
+        <h3>Aktivasi Peran &amp; Generator Kode Guru</h3>
+        <div class="notice-box info">
+          <strong>Catatan Transparansi &amp; Keamanan GitHub Pages:</strong>
+          Modul ini berjalan 100% statis tanpa backend atau database terpusat. Kode aktivasi guru bersifat pemeriksaan sisi klien (<em>client-side</em>) untuk mencegah akses tidak sengaja oleh siswa, bukan sistem autentikasi rahasia. Kode Guru yang dihasilkan memuat informasi kontak secara terbaca (terkode Base64) agar perangkat siswa dapat membuka WhatsApp atau Email secara offline/langsung.
+        </div>
+
+        <!-- Form Klaim Kode Aktivasi -->
+        <div id="teacher-lock-panel">
+          <form id="form-teacher-claim" class="stacked-form">
+            <label for="teacher-activation-input">Masukkan Kode Aktivasi Guru:</label>
+            <div class="inline-form">
+              <input type="password" id="teacher-activation-input" placeholder="Masukkan kode aktivasi..." required autocomplete="off">
+              <button type="submit" class="btn btn-primary">Aktifkan Area Guru</button>
+            </div>
+            <p class="muted small-text">Kode demo bawaan repositori: <code>GURU-KKA7</code> (pengelola situs wajib menggantinya di <code>app.js</code> sebelum dipublikasikan).</p>
+          </form>
+        </div>
+
+        <!-- Panel Guru Aktif -->
+        <div id="teacher-active-panel" class="hidden">
+          <div class="teacher-status-bar">
+            <span class="pill pill-success">Status: Peran Guru Aktif di Browser Ini</span>
+            <button type="button" id="btn-teacher-lock" class="btn btn-secondary btn-sm">Kunci Kembali</button>
+          </div>
+
+          <form id="form-teacher-profile" class="stacked-form">
+            <div class="form-group">
+              <label for="teacher-name">Nama Tampilan Guru <span class="required">*</span></label>
+              <input type="text" id="teacher-name" maxlength="50" placeholder="Contoh: Ibu Rina / Pak Budi" required>
+            </div>
+
+            <div class="form-group">
+              <label for="teacher-contact-type">Saluran Penerimaan Hasil Siswa <span class="required">*</span></label>
+              <select id="teacher-contact-type">
+                <option value="whatsapp">WhatsApp (Nomor HP)</option>
+                <option value="email">Email (Alamat Surel)</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="group-teacher-wa">
+              <label for="teacher-wa-number">Nomor WhatsApp Guru (awalan 08 atau 62) <span class="required">*</span></label>
+              <input type="tel" id="teacher-wa-number" placeholder="Contoh: 081234567890">
+            </div>
+
+            <div class="form-group hidden" id="group-teacher-email">
+              <label for="teacher-email-address">Alamat Email Guru <span class="required">*</span></label>
+              <input type="email" id="teacher-email-address" placeholder="Contoh: guru.informatika@sekolah.sch.id">
+            </div>
+
+            <div class="button-row">
+              <button type="submit" class="btn btn-primary">Simpan Profil &amp; Buat Kode Guru</button>
+              <button type="button" id="btn-delete-teacher-profile" class="btn btn-danger-outline">Hapus Profil Guru</button>
+            </div>
+          </form>
+
+          <!-- Output Kode Guru -->
+          <div id="teacher-code-output" class="teacher-code-box hidden">
+            <h4>Kode Guru Siap Dibagikan ke Siswa</h4>
+            <p class="muted">Bagikan kode di bawah ini kepada siswa. Saat siswa memasukkannya di halaman Evaluasi Akhir, tombol kirim langsung mengarah ke kontak Anda.</p>
+            <div class="code-display-row">
+              <code id="generated-teacher-code" class="teacher-code-value"></code>
+              <button type="button" id="btn-copy-teacher-code" class="btn btn-secondary">Salin Kode</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <p>Modul Interaktif KKA Kelas VII — Bab 1: Berpikir Komputasional[cite: 1]. Disusun merujuk buku teks Kemendikdasmen RI (2025)[cite: 1].</p>
+      <p class="muted small-text">Berjalan 100% statis (offline-ready) • Penyimpanan lokal browser (<code>localStorage</code>).</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

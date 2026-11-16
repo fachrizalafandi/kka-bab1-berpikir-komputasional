@@ -54,7 +54,18 @@ const KKA_BAB1_DATA = {
         title: "Pengayaan: Berpikir Komputasional Bukan Hanya untuk Programmer",
         text: "Menurut Jeannette Wing (2006), berpikir komputasional adalah keterampilan dasar bagi semua orang di abad ke-21—mulai dari merencanakan rute perjalanan, mengatur waktu belajar, hingga bekerja sama dalam tim[cite: 5, 6]."
       },
-      activityType: "pillars"
+      activityType: "pillars",
+      fieldwork: {
+        title: "Misi Individu: Atur Hari Bersih Kelas",
+        scenario: "Kelas akan mengadakan kegiatan bersih-bersih, tetapi tugas sering bertumpuk dan ada bagian yang terlupa.",
+        actions: [
+          "Pecah pekerjaan menjadi tugas-tugas kecil yang perlu dilakukan.",
+          "Cari kegiatan yang berulang atau bagian yang biasanya terlupa.",
+          "Pilih informasi yang benar-benar dibutuhkan, lalu susun urutan kerja yang mudah diikuti orang lain."
+        ],
+        responseLabel: "Catat rancangan pembagian tugas dan urutan kerjamu:",
+        placeholder: "Tugas: ...; pola yang ditemukan: ...; urutan kerja: ..."
+      }
     },
     {
       id: "unit-2",
@@ -75,7 +86,18 @@ const KKA_BAB1_DATA = {
         title: "Pengayaan: Data dalam Kehidupan Kota & Aplikasi Peta",
         text: "Di kota besar seperti Tokyo dan Seoul, data perjalanan pelajar dipakai mengatur jadwal bus dan kereta agar tidak menumpuk di jam masuk sekolah[cite: 9]. Aplikasi peta digital juga mengolah data lalu lintas secara langsung untuk memberi info kemacetan[cite: 9]."
       },
-      activityType: "data"
+      activityType: "data",
+      fieldwork: {
+        title: "Survei Mini: Kebiasaan Membaca",
+        scenario: "Perpustakaan kelas ingin mengetahui jenis bacaan yang paling diminati agar bisa memilih buku baru.",
+        actions: [
+          "Tentukan beberapa kategori bacaan dan tanyakan sendiri pilihan kepada beberapa teman tanpa mencatat nama.",
+          "Gunakan tabel turus untuk menghitung setiap pilihan, lalu buat diagram sederhana di buku atau kertas.",
+          "Tentukan kategori terbanyak dan usulkan satu keputusan pengadaan buku berdasarkan data."
+        ],
+        responseLabel: "Catat kategori, hasil hitungan, dan keputusanmu:",
+        placeholder: "Kategori dan jumlah: ...; diagram yang dibuat: ...; keputusan berdasarkan data: ..."
+      }
     },
     {
       id: "unit-3",
@@ -93,7 +115,18 @@ const KKA_BAB1_DATA = {
         }
       ],
       enrichment: null,
-      activityType: "polya_parking"
+      activityType: "polya_parking",
+      fieldwork: {
+        title: "Misi Individu: Rute Pengantaran Perlengkapan",
+        scenario: "Kamu perlu merencanakan rute untuk mengantar perlengkapan dari kelas ke perpustakaan, laboratorium, dan ruang guru, lalu kembali ke kelas.",
+        actions: [
+          "Gambar denah sederhana yang menunjukkan lokasi dan jalan yang bisa dilewati.",
+          "Gunakan langkah Polya untuk memahami tujuan, merencanakan urutan kunjungan, dan menelusuri rute.",
+          "Periksa bahwa setiap lokasi dikunjungi satu kali dan kamu kembali ke titik awal; coba susun rute alternatif."
+        ],
+        responseLabel: "Gambarkan atau tuliskan rute serta hasil pemeriksaanmu:",
+        placeholder: "Kelas → ... → kembali ke kelas. Rute ini memenuhi aturan karena..."
+      }
     },
     {
       id: "unit-4",
@@ -111,7 +144,18 @@ const KKA_BAB1_DATA = {
         }
       ],
       enrichment: null,
-      activityType: "debugging"
+      activityType: "debugging",
+      fieldwork: {
+        title: "Uji Instruksi Mandiri dengan Kisi-Kisi",
+        scenario: "Rancang instruksi untuk menggerakkan penanda dari satu titik ke titik tujuan pada kertas berkisi-kisi.",
+        actions: [
+          "Pilih titik awal dan tujuan, lalu tulis instruksi dengan arah serta jumlah langkah yang jelas.",
+          "Jalankan instruksi pada kisi-kisi persis seperti tertulis; jangan menambahkan langkah yang tidak dicatat.",
+          "Catat langkah yang membuatmu menebak, perbaiki instruksi, lalu uji kembali."
+        ],
+        responseLabel: "Tuliskan titik awal/tujuan, instruksi, bug yang ditemukan, dan perbaikannya:",
+        placeholder: "Instruksi awal: ...; bug saat diuji: ...; instruksi yang diperbaiki: ..."
+      }
     },
     {
       id: "unit-5",
@@ -132,7 +176,18 @@ const KKA_BAB1_DATA = {
         title: "Pengayaan: Platform Belajar Koding Blok Gratis",
         text: "Selain Scratch (scratch.mit.edu), siswa dapat berlatih logika blok melalui Code.org, Blockly Games, maupun Octo Studio di perangkat ponsel[cite: 34, 35]."
       },
-      activityType: "trash_game"
+      activityType: "trash_game",
+      fieldwork: {
+        title: "Rancang Sprite Sampah Baru Secara Mandiri",
+        scenario: "Tambahkan satu benda sampah baru ke gim Pilah Sampah. Sprite harus memberi poin saat masuk ke tong yang benar dan memberi petunjuk saat salah.",
+        actions: [
+          "Pilih sendiri benda, tentukan kategori, dan gambarkan sprite serta tong tujuan.",
+          "Susun rancangan blok menggunakan peristiwa, kondisi/sensor, perubahan variabel skor, dan pesan umpan balik.",
+          "Uji dengan tong yang benar dan salah, lalu ceritakan perubahan yang diperlukan jika perilakunya belum sesuai."
+        ],
+        responseLabel: "Tuliskan rancangan sprite, urutan blok, dan hasil pengujiannya:",
+        placeholder: "Sprite dan kategori: ...; urutan blok: ...; hasil uji benar/salah: ..."
+      }
     }
   ],
 

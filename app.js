@@ -27,13 +27,14 @@
       student: {
         nickname: "",
         warmupAnswer: null,
-        completedUnits: {
+        passedUnits: {
           "unit-1": false,
           "unit-2": false,
           "unit-3": false,
           "unit-4": false,
           "unit-5": false
         },
+        unitAnswers: {},
         evaluation: {
           answers: {},
           submitted: false,
@@ -75,9 +76,13 @@
         student: {
           ...fallback.student,
           ...(parsed.student || {}),
-          completedUnits: {
-            ...fallback.student.completedUnits,
-            ...((parsed.student && parsed.student.completedUnits) || {})
+          passedUnits: {
+            ...fallback.student.passedUnits,
+            ...((parsed.student && parsed.student.passedUnits) || {})
+          },
+          unitAnswers: {
+            ...fallback.student.unitAnswers,
+            ...((parsed.student && parsed.student.unitAnswers) || {})
           },
           evaluation: {
             ...fallback.student.evaluation,
@@ -196,8 +201,12 @@
   let activeUnitIndex = 0;
   let activeEvalIndex = 0;
 
+  function areAllUnitsPassed() {
+    return KKA_BAB1_DATA.units.every((unit) => appState.student.passedUnits[unit.id]);
+  }
+
   function updateGlobalProgress() {
-    const unitsDone = Object.values(appState.student.completedUnits).filter(Boolean).length;
+    const unitsDone = Object.values(appState.student.passedUnits).filter(Boolean).length;
     const evalDone = appState.student.evaluation.submitted ? 1 : 0;
     const reflectionCount = Object.keys(appState.student.reflection.checks).length;
     const reflectionDone = reflectionCount >= KKA_BAB1_DATA.reflectionItems.length ? 1 : 0;
@@ -222,17 +231,46 @@
     }
 
     KKA_BAB1_DATA.units.forEach((u, idx) => {
+      const tab = document.getElementById(`tab-unit-${idx}`);
       const statusSpan = document.getElementById(`status-unit-${idx}`);
+      const isUnlocked = isUnitUnlocked(idx);
+      if (tab) tab.disabled = !isUnlocked;
       if (statusSpan) {
-        const isDone = Boolean(appState.student.completedUnits[u.id]);
-        statusSpan.textContent = isDone ? "✓" : "○";
+        const isDone = Boolean(appState.student.passedUnits[u.id]);
+        statusSpan.textContent = isDone ? "✓" : isUnlocked ? "○" : "🔒";
         statusSpan.classList.toggle("done", isDone);
-        statusSpan.setAttribute("aria-label", isDone ? "Selesai" : "Belum selesai");
+        statusSpan.setAttribute(
+          "aria-label",
+          isDone ? "Selesai" : isUnlocked ? "Belum selesai" : "Terkunci, selesaikan unit sebelumnya"
+        );
       }
+    });
+
+    const materialsPassed = areAllUnitsPassed();
+    ["evaluasi", "refleksi"].forEach((viewName) => {
+      const button = document.querySelector(`.nav-btn[data-view="${viewName}"]`);
+      if (!button) return;
+
+      const viewLabel = viewName === "evaluasi" ? "3. Evaluasi Akhir" : "4. Refleksi";
+      button.disabled = !materialsPassed;
+      button.title = materialsPassed ? "" : "Selesaikan semua unit materi dengan benar untuk membuka bagian ini.";
+      button.setAttribute(
+        "aria-label",
+        materialsPassed
+          ? viewLabel
+          : `${viewLabel} terkunci. Selesaikan semua lima unit materi dengan benar.`
+      );
+      const lockIcon = button.querySelector(".nav-lock");
+      if (lockIcon) lockIcon.classList.toggle("hidden", materialsPassed);
     });
   }
 
   function switchView(viewName) {
+    if ((viewName === "evaluasi" || viewName === "refleksi") && !areAllUnitsPassed()) {
+      showBanner("Selesaikan dan jawab benar semua aktivitas di lima unit materi untuk membuka bagian ini.");
+      return;
+    }
+
     currentView = viewName;
     document.querySelectorAll(".view-section").forEach((sec) => {
       sec.classList.add("hidden");
@@ -329,14 +367,64 @@
      VIEW 2: MATERI & 5 AKTIVITAS INTERAKTIF
      --------------------------------------------------------- */
   function markUnitCompleted(unitId) {
-    if (!appState.student.completedUnits[unitId]) {
-      appState.student.completedUnits[unitId] = true;
+    if (!appState.student.passedUnits[unitId]) {
+      appState.student.passedUnits[unitId] = true;
       saveState();
     }
   }
 
+  function isUnitUnlocked(index) {
+    return KKA_BAB1_DATA.units.slice(0, index).every((unit) => appState.student.passedUnits[unit.id]);
+  }
+
+  function getUnitAnswers(unitId) {
+    const answers = appState.student.unitAnswers[unitId];
+    return answers && typeof answers === "object" ? answers : {};
+  }
+
+  function saveUnitAnswers(unitId, answers) {
+    appState.student.unitAnswers[unitId] = answers;
+    saveState();
+  }
+
+  function showUnitResult(unitId, correctCount, incorrectCount, passed, note) {
+    const unitIndex = KKA_BAB1_DATA.units.findIndex((unit) => unit.id === unitId);
+    const dialog = document.getElementById("unit-result-dialog");
+    const isLastUnit = unitIndex === KKA_BAB1_DATA.units.length - 1;
+
+    document.getElementById("unit-result-title").textContent = `Hasil Unit ${unitIndex + 1}`;
+    document.getElementById("unit-result-description").textContent = passed
+      ? isLastUnit
+        ? "Semua jawaban benar. Tutup ringkasan untuk melanjutkan ke Evaluasi Akhir."
+        : "Semua jawaban benar. Tutup ringkasan untuk membuka unit berikutnya."
+      : "Masih ada jawaban yang keliru. Perbaiki jawaban, lalu kirim kembali; unit berikutnya tetap terkunci.";
+    document.getElementById("unit-result-correct").textContent = String(correctCount);
+    document.getElementById("unit-result-incorrect").textContent = String(incorrectCount);
+
+    const noteElement = document.getElementById("unit-result-note");
+    noteElement.textContent = note || "";
+    noteElement.classList.toggle("hidden", !note);
+
+    const closeButton = document.getElementById("btn-close-unit-result");
+    closeButton.textContent = !passed
+      ? "Kembali ke Unit"
+      : isLastUnit
+        ? "Lanjut ke Evaluasi Akhir"
+        : "Lanjut ke Unit Berikutnya";
+    dialog.dataset.completedUnitId = unitId;
+    dialog.dataset.nextUnitIndex = String(unitIndex + 1);
+    dialog.dataset.passed = String(passed);
+    dialog.showModal();
+  }
+
   function renderUnit(index) {
-    activeUnitIndex = Math.max(0, Math.min(index, KKA_BAB1_DATA.units.length - 1));
+    const targetIndex = Math.max(0, Math.min(index, KKA_BAB1_DATA.units.length - 1));
+    if (!isUnitUnlocked(targetIndex)) {
+      showBanner("Selesaikan aktivitas unit sebelumnya terlebih dahulu.");
+      return;
+    }
+
+    activeUnitIndex = targetIndex;
     const unit = KKA_BAB1_DATA.units[activeUnitIndex];
 
     document.querySelectorAll(".unit-tab").forEach((tab, idx) => {
@@ -348,17 +436,17 @@
     const prevBtn = document.getElementById("btn-prev-unit");
     const nextBtn = document.getElementById("btn-next-unit");
     if (prevBtn) prevBtn.disabled = activeUnitIndex === 0;
+    const isDone = Boolean(appState.student.passedUnits[unit.id]);
     if (nextBtn) {
       nextBtn.textContent =
         activeUnitIndex === KKA_BAB1_DATA.units.length - 1
           ? "Lanjut ke Evaluasi Akhir →"
           : "Unit Berikutnya →";
+      nextBtn.disabled = !isDone;
     }
 
     const panel = document.getElementById("unit-content-area");
     if (!panel) return;
-
-    const isDone = Boolean(appState.student.completedUnits[unit.id]);
 
     let html = `
       <div class="activity-header">
@@ -401,13 +489,40 @@
     if (unit.activityType === "polya_parking") renderActivityPolyaParking(mount, unit.id);
     if (unit.activityType === "debugging") renderActivityDebugging(mount, unit.id);
     if (unit.activityType === "trash_game") renderActivityTrashGame(mount, unit.id);
+    renderFieldworkActivity(panel, unit);
+  }
+
+  function renderFieldworkActivity(panel, unit) {
+    if (!unit.fieldwork) return;
+
+    const savedAnswer = getUnitAnswers(unit.id).fieldwork || "";
+    const fieldwork = document.createElement("article");
+    fieldwork.className = "card fieldwork-activity";
+    fieldwork.innerHTML = `
+      <h3>${escapeHtml(unit.fieldwork.title)}</h3>
+      <p><strong>Situasi:</strong> ${escapeHtml(unit.fieldwork.scenario)}</p>
+      <ol class="step-list">
+        ${unit.fieldwork.actions.map((action) => `<li>${escapeHtml(action)}</li>`).join("")}
+      </ol>
+      <label for="fieldwork-${unit.id}">${escapeHtml(unit.fieldwork.responseLabel)}</label>
+      <textarea id="fieldwork-${unit.id}" rows="4" placeholder="${escapeHtml(unit.fieldwork.placeholder)}">${escapeHtml(savedAnswer)}</textarea>
+      <p class="muted small-text">Catatan kegiatan tersimpan otomatis di perangkat ini.</p>
+    `;
+    panel.appendChild(fieldwork);
+
+    fieldwork.querySelector("textarea").addEventListener("input", (event) => {
+      saveUnitAnswers(unit.id, {
+        ...getUnitAnswers(unit.id),
+        fieldwork: event.target.value
+      });
+    });
   }
 
   /* AKTIVITAS 1: Tantangan 4 Pilar Berpikir Komputasional */
   function renderActivityPillars(mount, unitId) {
     const items = KKA_BAB1_DATA.pillarChallenge;
     const pillarChoices = ["Dekomposisi", "Pengenalan Pola", "Abstraksi", "Algoritma"];
-    const userSelections = {};
+    const userSelections = { ...(getUnitAnswers(unitId).selections || {}) };
 
     function draw() {
       let html = `
@@ -446,11 +561,13 @@
       mount.querySelectorAll("[data-pillar-item]").forEach((sel) => {
         sel.addEventListener("change", () => {
           userSelections[sel.getAttribute("data-pillar-item")] = sel.value;
+          saveUnitAnswers(unitId, { selections: { ...userSelections } });
         });
       });
 
       document.getElementById("act1-reset").addEventListener("click", () => {
         Object.keys(userSelections).forEach((k) => delete userSelections[k]);
+        saveUnitAnswers(unitId, { selections: {} });
         draw();
       });
 
@@ -477,12 +594,12 @@
         if (correctCount === items.length) {
           fb.className = "feedback-box success";
           fb.innerHTML = `<strong>Luar biasa! Semua (${correctCount}/${items.length}) tepat. Unit 1 selesai!</strong><ul>${notes.join("")}</ul>`;
-          markUnitCompleted(unitId);
-          renderUnit(activeUnitIndex);
         } else {
           fb.className = "feedback-box error";
           fb.innerHTML = `<strong>Skor kamu: ${correctCount} dari ${items.length} benar.</strong> Coba perbaiki yang masih keliru:<ul>${notes.join("")}</ul>`;
         }
+        saveUnitAnswers(unitId, { selections: { ...userSelections } });
+        showUnitResult(unitId, correctCount, items.length - correctCount, correctCount === items.length);
       });
     }
 
@@ -492,8 +609,15 @@
   /* AKTIVITAS 2: Pengelolaan Data & Diagram Batang */
   function renderActivityData(mount, unitId) {
     const dc = KKA_BAB1_DATA.dataChallenge;
-    const counts = { "Sepeda": 0, "Jalan Kaki": 0, "Diantar Motor": 0, "Angkutan/Bus": 0 };
-    let dominantGuess = "";
+    const savedAnswers = getUnitAnswers(unitId);
+    const counts = {
+      "Sepeda": 0,
+      "Jalan Kaki": 0,
+      "Diantar Motor": 0,
+      "Angkutan/Bus": 0,
+      ...(savedAnswers.counts || {})
+    };
+    let dominantGuess = savedAnswers.dominantGuess || "";
 
     function draw() {
       const maxVal = 8;
@@ -591,6 +715,7 @@
         btn.addEventListener("click", () => {
           const cat = btn.getAttribute("data-inc");
           if (counts[cat] < 16) counts[cat]++;
+          saveUnitAnswers(unitId, { counts: { ...counts }, dominantGuess });
           draw();
         });
       });
@@ -599,17 +724,20 @@
         btn.addEventListener("click", () => {
           const cat = btn.getAttribute("data-dec");
           if (counts[cat] > 0) counts[cat]--;
+          saveUnitAnswers(unitId, { counts: { ...counts }, dominantGuess });
           draw();
         });
       });
 
       document.getElementById("act2-dominant").addEventListener("change", (e) => {
         dominantGuess = e.target.value;
+        saveUnitAnswers(unitId, { counts: { ...counts }, dominantGuess });
       });
 
       document.getElementById("act2-reset").addEventListener("click", () => {
         dc.categories.forEach((c) => (counts[c] = 0));
         dominantGuess = "";
+        saveUnitAnswers(unitId, { counts: { ...counts }, dominantGuess });
         draw();
       });
 
@@ -623,8 +751,6 @@
           fb.className = "feedback-box success";
           fb.innerHTML =
             "<strong>Tepat sekali!</strong> Rincian frekuensi: Sepeda (7), Jalan Kaki (4), Diantar Motor (3), dan Angkutan/Bus (2). Moda terbanyak adalah <strong>Sepeda</strong>. Unit 2 selesai!";
-          markUnitCompleted(unitId);
-          renderUnit(activeUnitIndex);
         } else {
           fb.className = "feedback-box error";
           let msg = "<strong>Belum seluruhnya tepat:</strong><ul>";
@@ -637,6 +763,16 @@
           msg += "</ul>";
           fb.innerHTML = msg;
         }
+        const correctCount =
+          dc.categories.filter((category) => counts[category] === dc.correctCounts[category]).length +
+          Number(analysisOk);
+        saveUnitAnswers(unitId, { counts: { ...counts }, dominantGuess });
+        showUnitResult(
+          unitId,
+          correctCount,
+          dc.categories.length + 1 - correctCount,
+          freqOk && analysisOk
+        );
       });
     }
 
@@ -645,13 +781,17 @@
 
   /* AKTIVITAS 3: Urutan Langkah Polya & Teka-Teki Parkir */
   function renderActivityPolyaParking(mount, unitId) {
-    let polyaList = [
+    const savedAnswers = getUnitAnswers(unitId);
+    const startingPolyaOrder = [
       KKA_BAB1_DATA.polyaStepsCorrect[2],
       KKA_BAB1_DATA.polyaStepsCorrect[0],
       KKA_BAB1_DATA.polyaStepsCorrect[3],
       KKA_BAB1_DATA.polyaStepsCorrect[1]
     ];
-    let parkingChoice = "";
+    let polyaList = Array.isArray(savedAnswers.polyaOrder)
+      ? [...savedAnswers.polyaOrder]
+      : [...startingPolyaOrder];
+    let parkingChoice = savedAnswers.parkingChoice || "";
 
     function draw() {
       const pp = KKA_BAB1_DATA.parkingPuzzle;
@@ -707,6 +847,7 @@
           const i = Number(btn.getAttribute("data-up"));
           if (i > 0) {
             [polyaList[i - 1], polyaList[i]] = [polyaList[i], polyaList[i - 1]];
+            saveUnitAnswers(unitId, { polyaOrder: [...polyaList], parkingChoice });
             draw();
           }
         });
@@ -717,6 +858,7 @@
           const i = Number(btn.getAttribute("data-down"));
           if (i < polyaList.length - 1) {
             [polyaList[i], polyaList[i + 1]] = [polyaList[i + 1], polyaList[i]];
+            saveUnitAnswers(unitId, { polyaOrder: [...polyaList], parkingChoice });
             draw();
           }
         });
@@ -725,18 +867,15 @@
       mount.querySelectorAll("[data-park]").forEach((btn) => {
         btn.addEventListener("click", () => {
           parkingChoice = btn.getAttribute("data-park");
+          saveUnitAnswers(unitId, { polyaOrder: [...polyaList], parkingChoice });
           draw();
         });
       });
 
       document.getElementById("act3-reset").addEventListener("click", () => {
-        polyaList = [
-          KKA_BAB1_DATA.polyaStepsCorrect[2],
-          KKA_BAB1_DATA.polyaStepsCorrect[0],
-          KKA_BAB1_DATA.polyaStepsCorrect[3],
-          KKA_BAB1_DATA.polyaStepsCorrect[1]
-        ];
+        polyaList = [...startingPolyaOrder];
         parkingChoice = "";
+        saveUnitAnswers(unitId, { polyaOrder: [...polyaList], parkingChoice });
         draw();
       });
 
@@ -749,8 +888,6 @@
         if (polyaOk && parkOk) {
           fb.className = "feedback-box success";
           fb.innerHTML = `<strong>Sempurna!</strong> Urutan langkah Polya sudah tepat dan analisis parkirmu benar: ${escapeHtml(pp.explanation)} Unit 3 selesai!`;
-          markUnitCompleted(unitId);
-          renderUnit(activeUnitIndex);
         } else {
           fb.className = "feedback-box error";
           let msg = "<strong>Masih ada bagian yang perlu diperbaiki:</strong><ul>";
@@ -763,6 +900,16 @@
           msg += "</ul>";
           fb.innerHTML = msg;
         }
+        const correctCount =
+          polyaList.filter((step, index) => step === KKA_BAB1_DATA.polyaStepsCorrect[index]).length +
+          Number(parkOk);
+        saveUnitAnswers(unitId, { polyaOrder: [...polyaList], parkingChoice });
+        showUnitResult(
+          unitId,
+          correctCount,
+          KKA_BAB1_DATA.polyaStepsCorrect.length + 1 - correctCount,
+          polyaOk && parkOk
+        );
       });
     }
 
@@ -772,7 +919,8 @@
   /* AKTIVITAS 4: Instruksi & Debugging */
   function renderActivityDebugging(mount, unitId) {
     const dt = KKA_BAB1_DATA.debuggingTask;
-    let steps = [...dt.buggySteps];
+    const savedSteps = getUnitAnswers(unitId).steps;
+    let steps = Array.isArray(savedSteps) ? [...savedSteps] : [...dt.buggySteps];
 
     function draw() {
       let html = `
@@ -810,6 +958,7 @@
           const i = Number(btn.getAttribute("data-up"));
           if (i > 0) {
             [steps[i - 1], steps[i]] = [steps[i], steps[i - 1]];
+            saveUnitAnswers(unitId, { steps: [...steps] });
             draw();
           }
         });
@@ -820,6 +969,7 @@
           const i = Number(btn.getAttribute("data-down"));
           if (i < steps.length - 1) {
             [steps[i], steps[i + 1]] = [steps[i + 1], steps[i]];
+            saveUnitAnswers(unitId, { steps: [...steps] });
             draw();
           }
         });
@@ -827,6 +977,7 @@
 
       document.getElementById("act4-reset").addEventListener("click", () => {
         steps = [...dt.buggySteps];
+        saveUnitAnswers(unitId, { steps: [...steps] });
         draw();
       });
 
@@ -838,18 +989,25 @@
         const idxTampil = steps.indexOf("Tampilkan nilai variabel Total di layar.");
 
         const valid = idxBuku < idxHitung && idxPensil < idxHitung && idxHitung < idxTampil;
+        const correctCount = Number(idxBuku < idxHitung) + Number(idxPensil < idxHitung) + Number(idxHitung < idxTampil);
         fb.classList.remove("hidden");
 
         if (valid) {
           fb.className = "feedback-box success";
           fb.innerHTML = `<strong>Program berjalan sukses! Output layar: Rp20.000.</strong><br>${escapeHtml(dt.explanation)} Unit 4 selesai!`;
-          markUnitCompleted(unitId);
-          renderUnit(activeUnitIndex);
         } else {
           fb.className = "feedback-box error";
           fb.innerHTML =
             "<strong>Masih terjadi Bug!</strong> Pastikan nilai Buku dan Pensil sudah disimpan sebelum dihitung ke dalam variabel Total, dan perintah menampilkan hasil berada di paling akhir.";
         }
+        saveUnitAnswers(unitId, { steps: [...steps] });
+        showUnitResult(
+          unitId,
+          correctCount,
+          3 - correctCount,
+          valid,
+          "Penilaian berdasarkan tiga aturan urutan instruksi."
+        );
       });
     }
 
@@ -858,10 +1016,13 @@
 
   /* AKTIVITAS 5: Simulasi Gim Pilah Sampah (Tap & Drag-and-Drop) */
   function renderActivityTrashGame(mount, unitId) {
-    let remaining = [...KKA_BAB1_DATA.trashItems];
+    const savedAnswers = getUnitAnswers(unitId);
+    let remaining = Array.isArray(savedAnswers.remainingIds)
+      ? KKA_BAB1_DATA.trashItems.filter((item) => savedAnswers.remainingIds.includes(item.id))
+      : [...KKA_BAB1_DATA.trashItems];
     let selectedTrashId = null;
-    let score = 0;
-    let mistakes = 0;
+    let score = (KKA_BAB1_DATA.trashItems.length - remaining.length) * 10;
+    let mistakes = Number(savedAnswers.mistakes) || 0;
     let lastFeedback = {
       type: "info",
       text: "Aturan permainan: Tong Hijau = Sampah Organik | Tong Kuning = Sampah Anorganik. Ketuk (tap) satu benda sampah lalu ketuk tong tujuan, atau seret (drag-and-drop) ke tong yang sesuai."
@@ -881,9 +1042,6 @@
           type: "success",
           text: `Benar! "${item.name}" masuk ke kategori ${targetCategory.toUpperCase()} (+10 poin). ${item.hint}`
         };
-        if (remaining.length === 0) {
-          markUnitCompleted(unitId);
-        }
       } else {
         mistakes += 1;
         lastFeedback = {
@@ -891,9 +1049,19 @@
           text: `Kurang tepat! "${item.name}" bukan sampah ${targetCategory.toUpperCase()}. Petunjuk: ${item.hint}`
         };
       }
+      saveUnitAnswers(unitId, {
+        remainingIds: remaining.map((remainingItem) => remainingItem.id),
+        mistakes
+      });
 
       if (remaining.length === 0) {
-        renderUnit(activeUnitIndex);
+        showUnitResult(
+          unitId,
+          KKA_BAB1_DATA.trashItems.length,
+          mistakes,
+          true,
+          "Jumlah salah dihitung dari percobaan memilih tong yang keliru."
+        );
       } else {
         draw();
       }
@@ -1020,8 +1188,22 @@
           type: "info",
           text: "Permainan diulang. Ketuk benda sampah lalu ketuk Tong Hijau (Organik) atau Tong Kuning (Anorganik)."
         };
+        saveUnitAnswers(unitId, {
+          remainingIds: remaining.map((item) => item.id),
+          mistakes
+        });
         draw();
       });
+
+      if (isFinished && !appState.student.passedUnits[unitId]) {
+        showUnitResult(
+          unitId,
+          KKA_BAB1_DATA.trashItems.length,
+          mistakes,
+          true,
+          "Jumlah salah dihitung dari percobaan memilih tong yang keliru."
+        );
+      }
     }
 
     draw();
@@ -1386,7 +1568,7 @@
   function buildStudentResultSummaryText(teacherInfo) {
     const ev = appState.student.evaluation;
     const nick = appState.student.nickname || "(Tanpa Nama Panggilan)";
-    const unitsDone = Object.values(appState.student.completedUnits).filter(Boolean).length;
+    const unitsDone = Object.values(appState.student.passedUnits).filter(Boolean).length;
     const q10Ans = (ev.answers.q10 || "-").trim() || "-";
     const q11Ans = (ev.answers.q11 || "-").trim() || "-";
     const weakText =
@@ -1438,16 +1620,16 @@
       }: ${escapeHtml(decodedTeacher.contactValue)})
         </div>
         <p class="small-text muted">Tinjau isi pesan di bawah ini sebelum membuka aplikasi. Hasil <strong>belum terkirim</strong> sebelum Anda menekan tombol kirim di aplikasi WhatsApp atau Email Anda sendiri.</p>
-        <textarea class="message-preview" rows="9" readonly aria-label="Pratinjau ringkasan hasil untuk dikirim">${escapeHtml(summaryText)}</textarea>
+        <textarea class="message-preview" rows="9" aria-label="Edit pesan ringkasan hasil untuk dikirim">${escapeHtml(summaryText)}</textarea>
         <div class="button-row">
-          <a href="${externalHref}" target="_blank" rel="noopener noreferrer" class="btn btn-success">${escapeHtml(externalLabel)}</a>
+          <a href="${externalHref}" data-send-result target="_blank" rel="noopener noreferrer" class="btn btn-success">${escapeHtml(externalLabel)}</a>
           <button type="button" id="btn-copy-eval-summary" class="btn btn-secondary">Salin Ringkasan Hasil</button>
         </div>
       `;
     } else {
       sendActionsHtml = `
         <p class="small-text muted">Belum ada Kode Guru yang terhubung. Anda tetap dapat menyalin ringkasan hasil di bawah ini:</p>
-        <textarea class="message-preview" rows="8" readonly aria-label="Ringkasan hasil evaluasi">${escapeHtml(summaryText)}</textarea>
+        <textarea class="message-preview" rows="8" aria-label="Edit ringkasan hasil evaluasi">${escapeHtml(summaryText)}</textarea>
         <button type="button" id="btn-copy-eval-summary" class="btn btn-secondary">Salin Ringkasan Hasil</button>
       `;
     }
@@ -1479,6 +1661,22 @@
       </div>
     `;
 
+    const messagePreview = container.querySelector(".message-preview");
+    const sendLink = container.querySelector("[data-send-result]");
+    if (sendLink && messagePreview) {
+      sendLink.addEventListener("click", () => {
+        const message = encodeURIComponent(messagePreview.value);
+        if (decodedTeacher.contactType === "whatsapp") {
+          sendLink.href = `https://wa.me/${normalizeWhatsAppNumber(decodedTeacher.contactValue)}?text=${message}`;
+        } else {
+          const subject = encodeURIComponent(
+            `Hasil KKA Bab 1 - ${appState.student.nickname || "Siswa Kelas VII"}`
+          );
+          sendLink.href = `mailto:${encodeURIComponent(decodedTeacher.contactValue)}?subject=${subject}&body=${message}`;
+        }
+      });
+    }
+
     document.getElementById("btn-apply-teacher-code").addEventListener("click", () => {
       const codeInput = document.getElementById("student-teacher-code-input").value.trim();
       if (!codeInput) {
@@ -1501,7 +1699,7 @@
     const copyBtn = document.getElementById("btn-copy-eval-summary");
     if (copyBtn) {
       copyBtn.addEventListener("click", () => {
-        copyTextToClipboard(summaryText, "Ringkasan hasil berhasil disalin!");
+        copyTextToClipboard(messagePreview ? messagePreview.value : summaryText, "Ringkasan hasil berhasil disalin!");
       });
     }
   }
@@ -1607,6 +1805,29 @@
      INISIALISASI EVENT LISTENER UTAMA
      --------------------------------------------------------- */
   function initApp() {
+    const unitResultDialog = document.getElementById("unit-result-dialog");
+    document.getElementById("btn-close-unit-result").addEventListener("click", () => {
+      unitResultDialog.close();
+    });
+
+    unitResultDialog.addEventListener("close", () => {
+      const passed = unitResultDialog.dataset.passed === "true";
+      if (passed) {
+        markUnitCompleted(unitResultDialog.dataset.completedUnitId);
+      }
+      const nextUnitIndex = Number(unitResultDialog.dataset.nextUnitIndex);
+      delete unitResultDialog.dataset.completedUnitId;
+      delete unitResultDialog.dataset.nextUnitIndex;
+      delete unitResultDialog.dataset.passed;
+
+      if (!passed) return;
+      if (nextUnitIndex < KKA_BAB1_DATA.units.length) {
+        renderUnit(nextUnitIndex);
+      } else {
+        switchView("evaluasi");
+      }
+    });
+
     // Navigasi utama
     document.querySelectorAll(".nav-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -1632,6 +1853,10 @@
     });
 
     document.getElementById("btn-next-unit").addEventListener("click", () => {
+      if (!appState.student.passedUnits[KKA_BAB1_DATA.units[activeUnitIndex].id]) {
+        showBanner("Selesaikan aktivitas unit ini terlebih dahulu untuk membuka materi berikutnya.");
+        return;
+      }
       if (activeUnitIndex < KKA_BAB1_DATA.units.length - 1) {
         renderUnit(activeUnitIndex + 1);
       } else {

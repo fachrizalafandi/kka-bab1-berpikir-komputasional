@@ -194,8 +194,18 @@ body {
   cursor: pointer;
 }
 
-.nav-btn:hover {
+.nav-btn:hover:not(:disabled) {
   background: #e2e8f0;
+}
+
+.nav-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.nav-lock {
+  margin-left: 3px;
+  font-size: 0.75rem;
 }
 
 .nav-btn.active {
@@ -225,6 +235,57 @@ body {
   background: var(--primary-soft);
   color: var(--primary-hover);
   border: 1px solid #b2ccff;
+}
+
+.unit-result-dialog {
+  width: min(440px, calc(100% - 32px));
+  padding: 24px;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.unit-result-dialog::backdrop {
+  background: rgba(16, 24, 40, 0.6);
+}
+
+.unit-result-dialog h2 {
+  margin: 0 0 8px;
+}
+
+.unit-result-counts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.unit-result-count {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.unit-result-count strong {
+  font-size: 1.5rem;
+}
+
+.unit-result-count.correct {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.unit-result-count.incorrect {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.unit-result-dialog .btn {
+  width: 100%;
 }
 
 /* Main & Cards */
@@ -540,6 +601,11 @@ textarea {
 .unit-tab.active {
   border-color: var(--primary);
   background: var(--primary-soft);
+}
+
+.unit-tab:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .tab-num {

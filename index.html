@@ -36,8 +36,8 @@
       <div class="container nav-scroll">
         <button type="button" class="nav-btn active" data-view="beranda" aria-current="page">1. Beranda</button>
         <button type="button" class="nav-btn" data-view="materi">2. Materi &amp; Latihan</button>
-        <button type="button" class="nav-btn" data-view="evaluasi">3. Evaluasi Akhir</button>
-        <button type="button" class="nav-btn" data-view="refleksi">4. Refleksi</button>
+        <button type="button" class="nav-btn" data-view="evaluasi" disabled title="Selesaikan semua unit materi untuk membuka bagian ini">3. Evaluasi Akhir <span class="nav-lock" aria-hidden="true">🔒</span></button>
+        <button type="button" class="nav-btn" data-view="refleksi" disabled title="Selesaikan semua unit materi untuk membuka bagian ini">4. Refleksi <span class="nav-lock" aria-hidden="true">🔒</span></button>
         <button type="button" class="nav-btn nav-btn-teacher" data-view="guru">Area Guru</button>
       </div>
     </nav>
@@ -111,7 +111,7 @@
       <div class="section-header">
         <div>
           <h2 id="heading-materi">Materi &amp; Aktivitas Interaktif</h2>
-          <p class="muted">Buka setiap unit secara berurutan, baca konsep kuncinya, lalu selesaikan tantangannya.</p>
+          <p class="muted">Buka unit secara berurutan. Unit berikutnya terbuka setelah aktivitas unit sebelumnya selesai.</p>
         </div>
         <div class="unit-counter" id="unit-completion-badge">0 / 5 Unit Selesai</div>
       </div>
@@ -335,6 +335,23 @@
       <p class="muted small-text">Berjalan 100% statis (offline-ready) • Penyimpanan lokal browser (<code>localStorage</code>).</p>
     </div>
   </footer>
+
+  <dialog id="unit-result-dialog" class="unit-result-dialog" aria-labelledby="unit-result-title" aria-describedby="unit-result-description">
+    <h2 id="unit-result-title">Hasil Aktivitas</h2>
+    <p id="unit-result-description">Berikut hasil jawabanmu.</p>
+    <div class="unit-result-counts">
+      <div class="unit-result-count correct">
+        <span>Benar</span>
+        <strong id="unit-result-correct">0</strong>
+      </div>
+      <div class="unit-result-count incorrect">
+        <span>Salah</span>
+        <strong id="unit-result-incorrect">0</strong>
+      </div>
+    </div>
+    <p id="unit-result-note" class="muted small-text hidden"></p>
+    <button type="button" id="btn-close-unit-result" class="btn btn-primary">Lanjutkan</button>
+  </dialog>
 
   <script src="data.js"></script>
   <script src="app.js"></script>

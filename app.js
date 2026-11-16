@@ -1620,7 +1620,7 @@
       }: ${escapeHtml(decodedTeacher.contactValue)})
         </div>
         <p class="small-text muted">Tinjau isi pesan di bawah ini sebelum membuka aplikasi. Hasil <strong>belum terkirim</strong> sebelum Anda menekan tombol kirim di aplikasi WhatsApp atau Email Anda sendiri.</p>
-        <textarea class="message-preview" rows="9" aria-label="Edit pesan ringkasan hasil untuk dikirim">${escapeHtml(summaryText)}</textarea>
+        <textarea class="message-preview" rows="9" ${decodedTeacher.contactType === "whatsapp" ? "readonly" : ""} aria-label="${decodedTeacher.contactType === "whatsapp" ? "Pratinjau pesan WhatsApp" : "Edit pesan ringkasan hasil untuk dikirim"}">${escapeHtml(summaryText)}</textarea>
         <div class="button-row">
           <a href="${externalHref}" data-send-result target="_blank" rel="noopener noreferrer" class="btn btn-success">${escapeHtml(externalLabel)}</a>
           <button type="button" id="btn-copy-eval-summary" class="btn btn-secondary">Salin Ringkasan Hasil</button>
